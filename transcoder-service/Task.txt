@@ -1,7 +1,0 @@
-DockerFile to Containerize the whole service
-Java
-    - Logger
-    - Threads
-    - AWS S3
-    - AWS SQS
-    - FFMPEG
