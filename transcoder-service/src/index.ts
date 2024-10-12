@@ -1,55 +1,28 @@
-import AWS, { AWSError } from 'aws-sdk';
-
-
+import AWS from 'aws-sdk';
+import {Config} from './Config'
 const sqs = new AWS.SQS({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION,
+  accessKeyId:Config.awsAccessKeyId,
+  secretAccessKey:Config.awsSecretAccessKey,
+  region: Config.awsRegion
 });
 
-
-
-const params: AWS.SQS.ReceiveMessageRequest = {
-  QueueUrl: process.env.QUEUE_URL!,
-  MaxNumberOfMessages: 10,        // Receive up to 10 messages
-  WaitTimeSeconds: 20,            // Long polling (20 seconds)
-  VisibilityTimeout: 60,          // The message will be invisible for 30 seconds after receiving
-};
-async function getMessage(): Promise<void> {
-   sqs.receiveMessage(params)
-   .promise()
-   .then((data:AWS.SQS.ReceiveMessageResult)=>{
-    if(data.Messages && data.Messages.length > 0){
-      console.log("Messages received:", data.Messages);
-
-      // Process each message
-      data.Messages.forEach((message: AWS.SQS.Message) => {
-        if (message.Body && message.ReceiptHandle) {
-          console.log(`Processing message: ${message.Body}`);
-            
-          // Call function to delete the message
-          deleteMessage(message.ReceiptHandle);
-        }
-      });
+const receive_message_req_params:AWS.SQS.ReceiveMessageRequest ={
+      QueueUrl: Config.sqsQueueUrl,
+      WaitTimeSeconds:20,
+      VisibilityTimeout:30
+}
+//Poll messages : Short polling  (SQS.ts)
+async function pollMessages(){
+  while(true){
+    try{
+      const data = sqs.receiveMessage(receive_message_req_params);
     }
-  })
-  .catch((err:AWSError)=>{
-    console.error("Error receiving message", err.message);
-  });
+    catch(err){
+      console.log("Error",err);
+    }
+  }
 }
-
-async function deleteMessage (recieptHandler : string):Promise<void> {
-  const deleteParams: AWS.SQS.DeleteMessageRequest = {
-    QueueUrl: process.env.QUEUE_URL!,
-    ReceiptHandle: recieptHandler,
-  };
-  sqs.deleteMessage(deleteParams).promise()
-  .then((res)=>{
-    console.log("Message deleted succesfully",res);
-  })
-  .catch((err:AWSError)=>{
-    console.log("Error ",err);
-  });
-}
-
-setInterval(getMessage, 5000);
+//Download the video
+  // Transcode the video 
+//? Can use a notification service to send the notification for upload status
+// ** Delete the files and folder ** //
