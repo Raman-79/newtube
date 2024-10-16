@@ -14,8 +14,8 @@ app.use((0, cors_1.default)({
     allowedHeaders: ["*"],
     origin: "*"
 }));
-app.use(express_1.default.json({ limit: '10mb' }));
-app.use(express_1.default.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express_1.default.json({ limit: '100mb' }));
+app.use(express_1.default.urlencoded({ extended: true, limit: '100mb' }));
 app.use('/upload', upload_routes_1.default);
 // app.use('/publish', kafkaRoutes);
 app.get('/', (req, res) => {

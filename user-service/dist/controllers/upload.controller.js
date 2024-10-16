@@ -21,9 +21,12 @@ const s3 = new aws_sdk_1.default.S3({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     region: process.env.AWS_REGION,
 });
-const BUCKET_NAME = process.env.AWS_BUCKET_NAME || 'raman-vts-project';
-console.log("AWS Access Key: ", process.env.AWS_ACCESS_KEY_ID);
-console.log("AWS Secret Key: ", process.env.AWS_SECRET_ACCESS_KEY);
+const sqs = new aws_sdk_1.default.SQS({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION,
+});
+const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
 // Initialize multipart upload
 const initiateMultipartUpload = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { filename, mimeType, userId } = req.body;
@@ -33,11 +36,22 @@ const initiateMultipartUpload = (req, res) => __awaiter(void 0, void 0, void 0, 
             Key: `videos/${userId}/${Date.now()}-${filename}`,
             ContentType: mimeType,
         };
-        const createMultipartUploadResponse = yield s3.createMultipartUpload(params).promise();
-        res.status(200).json({
-            uploadId: createMultipartUploadResponse.UploadId,
-            key: createMultipartUploadResponse.Key,
+        yield s3.createMultipartUpload(params)
+            .promise()
+            .then((data) => {
+            res.status(200).json({
+                uploadId: data.UploadId,
+                key: data.Key,
+            });
+            console.log("Initialized multipart upload with upload id", data.UploadId);
+        })
+            .catch((err) => {
+            res.status(500).json({
+                message: 'Failed to initialize multipart upload from AWS'
+            });
+            console.log("Failed to initialize multipart upload from AWS", err.message);
         });
+        return;
     }
     catch (error) {
         console.error('Error initiating multipart upload', error);
@@ -60,11 +74,20 @@ const uploadPart = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             UploadId: uploadId,
             Body: req.file.buffer,
         };
-        const data = yield s3.uploadPart(params).promise();
-        res.status(200).json({
-            ETag: data.ETag,
-            PartNumber: parseInt(partNumber, 10)
+        yield s3.uploadPart(params)
+            .promise()
+            .then((data) => {
+            res.status(200).json({
+                ETag: data.ETag,
+                PartNumber: parseInt(partNumber, 10)
+            });
+        })
+            .catch((err) => {
+            res.status(500).json({
+                message: 'Error to upload part ' + partNumber + ' from AWS' + err.message
+            });
         });
+        return;
     }
     catch (error) {
         console.error('Error uploading part', error);
@@ -92,10 +115,26 @@ const completeMultipartUpload = (req, res) => __awaiter(void 0, void 0, void 0, 
             },
         };
         const completeMultipartUploadResponse = yield s3.completeMultipartUpload(params).promise();
+        //TODO: Put this in a function
+        //Send the video to a transcoder service
+        const paramsSendMessage = {
+            MessageBody: JSON.stringify({
+                type: 'video-topic',
+                value: completeMultipartUploadResponse.Location,
+                key: key
+            }),
+            QueueUrl: process.env.AWS_SQS_URL,
+        };
+        sqs.sendMessage(paramsSendMessage)
+            .promise()
+            .then((data) => console.log('Video URL sent to the queue -', data.MessageId))
+            .catch((err) => console.error('Error while sending Video URL to the queue', err.message));
         res.status(200).json({
             message: 'Upload completed successfully',
             location: completeMultipartUploadResponse.Location,
+            key: key
         });
+        return;
     }
     catch (error) {
         console.error('Error completing multipart upload', error);

@@ -1,6 +1,4 @@
 'use client';
-
-
 //TODO: Add file size check which should be 1GB only
 import { useState, FormEvent, useCallback } from 'react';
 import { useRouter } from 'next/navigation';

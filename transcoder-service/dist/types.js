@@ -1,14 +1,5 @@
-export interface SQSMessage {
-    Body: string;
-    ReceiptHandle: string;
-}
-
-export interface BodyType{
-    type:string,
-    value:string,
-    key:string
-}
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /*
 Message Received {
   MessageId: '82ede167-2527-4c09-802d-b99c62361fba',
