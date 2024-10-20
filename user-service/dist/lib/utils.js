@@ -9,17 +9,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const transcode_1 = require("./transcode");
-function main() {
+exports.addVideoToDB = addVideoToDB;
+const db_1 = require("../db/db");
+function addVideoToDB(originalUrl, title, description, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const videoProcessor = new transcode_1.VideoProcessingService();
-            yield videoProcessor.start();
+            const data = yield db_1.db.video.create({
+                data: {
+                    userId: '271b0106-526c-4799-af1f-f78a1796c7d3',
+                    title,
+                    description,
+                    url: originalUrl,
+                },
+            });
+            return data.id;
         }
-        catch (error) {
-            console.error('Fatal error in video processing service:', error);
-            process.exit(1);
+        catch (err) {
+            console.error("Error adding video to DB:", err);
+            return '';
         }
     });
 }
-main();

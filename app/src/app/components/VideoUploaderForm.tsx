@@ -4,7 +4,7 @@ import { useState, FormEvent, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 //NOTE: Make this dynamic to have only 100 requests
-const CHUNK_SIZE = 5 * 1024 * 1024;
+const MIN_CHUNK_SIZE = 5 * 1024 * 1024;
 
 interface UploadPart{
   ETag:string;
@@ -32,6 +32,8 @@ export default function VideoUploadForm() {
         body: JSON.stringify({
           filename: file.name,
           mimeType: file.type,
+          title:formData.title,
+          description:formData.description,
           userId: 'user-id', // Replace with actual user ID from your auth system
         }),
       });
@@ -39,14 +41,15 @@ export default function VideoUploadForm() {
       if (!initiateResponse.ok) throw new Error('Failed to initiate upload');
       
       const { uploadId, key } = await initiateResponse.json();
+        
 
       // Step 2: Upload parts
       const parts: UploadPart[] = [];
-      const chunks = Math.ceil(file.size / CHUNK_SIZE);
+      const chunks = Math.ceil(file.size / MIN_CHUNK_SIZE);
 
       for (let partNumber = 1; partNumber <= chunks; partNumber++) {
-        const start = (partNumber - 1) * CHUNK_SIZE;
-        const end = Math.min(start + CHUNK_SIZE, file.size);
+        const start = (partNumber - 1) * MIN_CHUNK_SIZE;
+        const end = Math.min(start + MIN_CHUNK_SIZE, file.size);
         const chunk = file.slice(start, end);
 
         // Create form data for this chunk
@@ -91,7 +94,8 @@ export default function VideoUploadForm() {
           uploadId,
           key,
           parts,
-
+          title:formData.title,
+          description:formData.description
         }),
       });
 

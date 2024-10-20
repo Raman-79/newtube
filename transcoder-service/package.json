@@ -14,6 +14,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.670.0",
     "@aws-sdk/client-sqs": "^3.670.0",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@tsed/logger": "^6.7.8",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",

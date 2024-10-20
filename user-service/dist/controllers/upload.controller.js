@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.abortMultipartUpload = exports.completeMultipartUpload = exports.uploadPart = exports.initiateMultipartUpload = void 0;
 const aws_sdk_1 = __importDefault(require("aws-sdk"));
+const utils_1 = require("../lib/utils");
 require('dotenv').config();
 // Initialize AWS S3 client
 const s3 = new aws_sdk_1.default.S3({
@@ -97,7 +98,7 @@ const uploadPart = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.uploadPart = uploadPart;
 // Complete multipart upload
 const completeMultipartUpload = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { uploadId, key, parts } = req.body;
+    const { uploadId, key, parts, title, description, thumbnail, userId } = req.body;
     try {
         if (!uploadId || !key || !parts || parts.length === 0) {
             res.status(400).json({ error: 'Missing required fields or parts' });
@@ -115,24 +116,36 @@ const completeMultipartUpload = (req, res) => __awaiter(void 0, void 0, void 0, 
             },
         };
         const completeMultipartUploadResponse = yield s3.completeMultipartUpload(params).promise();
+        if (!completeMultipartUploadResponse.Location) {
+            res.status(400).json({ message: "Error while uploading video" });
+            return;
+        }
+        const videoId = yield (0, utils_1.addVideoToDB)(completeMultipartUploadResponse.Location, title, description, userId);
+        console.log(videoId);
+        if (!videoId) {
+            console.log("Error while uploading video to DB");
+            //?? Write a function to handle situation where the multipart upload is finished and there is an issue while writing it to db
+        }
         //TODO: Put this in a function
         //Send the video to a transcoder service
-        const paramsSendMessage = {
-            MessageBody: JSON.stringify({
-                type: 'video-topic',
-                value: completeMultipartUploadResponse.Location,
-                key: key
-            }),
-            QueueUrl: process.env.AWS_SQS_URL,
-        };
-        sqs.sendMessage(paramsSendMessage)
-            .promise()
-            .then((data) => console.log('Video URL sent to the queue -', data.MessageId))
-            .catch((err) => console.error('Error while sending Video URL to the queue', err.message));
+        // const paramsSendMessage:SQS.Types.SendMessageRequest = {
+        //   MessageBody: JSON.stringify({
+        //     type: 'video-topic',
+        //     value: completeMultipartUploadResponse.Location,
+        //     key:key
+        //   }),
+        //   QueueUrl: process.env.AWS_SQS_URL!,
+        // };
+        //?? Resolve that issue here too
+        // sqs.sendMessage(paramsSendMessage)
+        // .promise()
+        // .then((data)=> console.log('Video URL sent to the queue -',data.MessageId,key))
+        // .catch((err:AWSError)=> console.error('Error while sending Video URL to the queue',err.message));
         res.status(200).json({
             message: 'Upload completed successfully',
             location: completeMultipartUploadResponse.Location,
-            key: key
+            key: key,
+            videoId
         });
         return;
     }
