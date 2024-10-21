@@ -1,21 +1,10 @@
 import { Request, Response } from "express";
-import { db } from '../db/db';
+import { findVideoById, findAllVideos } from '../services/video.service';
 
 export async function getVideoById(req: Request, res: Response) {
   try {
     const { video_id } = req.params;
-    const data = await db.video.findUnique({
-      where: { id: video_id },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    });
-    
+    const data = await findVideoById(video_id);
     if (data) {
       res.status(200).json({ data });
     } else {
@@ -29,7 +18,7 @@ export async function getVideoById(req: Request, res: Response) {
 
 export async function getAllVideos(req: Request, res: Response) {
   try {
-    const data = await db.video.findMany();
+    const data = await findAllVideos();
     res.status(200).json({ data });
   } catch (err) {
     console.error("Error fetching all videos:", err);
