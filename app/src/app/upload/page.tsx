@@ -15,7 +15,8 @@ export default function UploadPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Upload a New Video</h1>
+      <h1 className="text-3xl font-bold mb-8 text-white">Upload a New Video</h1>
+      <h1 className="text-3xl font-bold mb-8 text-white">Hello {session.user?.name}</h1>
       <VideoUploadForm />
     </div>
   );

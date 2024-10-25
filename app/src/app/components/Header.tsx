@@ -3,10 +3,8 @@
 'use client';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
-import AuthButton from '@/app/components/AuthButton';
 import React from 'react';
-
-
+import { GoogleSignInButton } from './authButtons';
 export default function Header() {
   const { data: session } = useSession();
 
@@ -29,7 +27,8 @@ export default function Header() {
             </button>
           </>
         ) : (
-          <AuthButton />
+          <>
+          </> 
         )}
       </nav>
     </header>
