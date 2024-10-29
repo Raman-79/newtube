@@ -7,3 +7,8 @@ export interface Video {
     createdAt: Date;
   }
   
+export interface User{
+  csrfToken: string;
+  email:string;
+  password:string;
+}
