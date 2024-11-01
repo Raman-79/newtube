@@ -5,6 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from "next-auth/providers/google";
 export const NEXT_AUTH = {
@@ -52,3 +53,4 @@ export const NEXT_AUTH = {
   }
     */
 }
+
