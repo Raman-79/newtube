@@ -1,0 +1,18 @@
+{
+  "name": "video-uploader",
+  "version": "1.0.0",
+  "description": "A microservices-based video streaming platform built with modern technologies.",
+  "main": "index.js",
+  "scripts": {
+    "dev:app": "cd app && cls && npm run dev",
+    "dev:watch": "cd watch-service && cls && npm run dev",
+    "dev:transcode": "cd transcoder-service && cls && npm run dev",
+    "dev:user": "cd user-service && cls && npm run dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "video-uploader": "file:"
+  }
+}

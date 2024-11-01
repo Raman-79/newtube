@@ -1,4 +1,5 @@
 export interface Video {
+
   id: string;
   title: string;
   description: string;
@@ -7,3 +8,11 @@ export interface Video {
   userId: string;
   createdAt: Date;
 }
+
+  
+export interface User{
+  csrfToken: string;
+  email:string;
+  password:string;
+}
+
