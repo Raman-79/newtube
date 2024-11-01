@@ -10,6 +10,7 @@ datasource db {
 model User {
   id        String    @id @default(uuid()) @db.Uuid
   name      String
+  password String 
   isCreator Boolean   @default(false)
   email     String    @unique
   createdAt DateTime  @default(now())
@@ -35,5 +36,5 @@ model Video {
   userId       String    @db.Uuid
   user         User      @relation(fields: [userId], references: [id])
 
-  @@map("videos") // Maps to "videos" table in database
+  @@map("videos") 
 }
