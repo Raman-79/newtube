@@ -1,23 +1,16 @@
+"use client";
 
-'use client';
-
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-
-type Video = {
-  id: string;
-  title: string;
-  thumbnailUrl: string;
-  user: {
-    name: string;
-  };
-};
+import { useEffect, useState } from "react";
+import VideoCard from "./VideoCard";
+import WatchPage from "./WatchPage";
+import { Video } from "../types";
+import TestComp from "./VideoPlayer/TestComp";
 
 export default function VideoGrid() {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
   useEffect(() => {
     fetchVideos();
@@ -26,16 +19,18 @@ export default function VideoGrid() {
   const fetchVideos = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/videos');
-      
+      const response = await fetch("/api/videos");
+
       if (!response.ok) {
-        throw new Error('Failed to fetch videos');
+        throw new Error("Failed to fetch videos");
+      } else {
+        console.log("Response", response);
       }
 
       const data = await response.json();
-      setVideos(data.videos);
+      setVideos(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load videos');
+      setError(err instanceof Error ? err.message : "Failed to load videos");
     } finally {
       setLoading(false);
     }
@@ -44,17 +39,12 @@ export default function VideoGrid() {
   if (loading) {
     return (
       <div className="container mx-auto p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {[...Array(8)].map((_, index) => (
-            <div 
-              key={index} 
-              className="bg-gray-200 rounded-lg animate-pulse"
-            >
-              <div className="aspect-video bg-gray-300 rounded-t-lg" />
-              <div className="p-3">
-                <div className="h-4 bg-gray-300 rounded w-3/4 mb-2" />
-                <div className="h-3 bg-gray-300 rounded w-1/2" />
-              </div>
+            <div key={index} className="animate-pulse">
+              <div className="aspect-video bg-gray-200 rounded-lg"></div>
+              <div className="mt-3 h-4 bg-gray-200 rounded"></div>
+              <div className="mt-2 h-4 w-3/4 bg-gray-200 rounded"></div>
             </div>
           ))}
         </div>
@@ -65,11 +55,14 @@ export default function VideoGrid() {
   if (error) {
     return (
       <div className="container mx-auto p-4">
-        <div className="text-center text-red-500 p-4 bg-red-50 rounded-lg">
-          {error}
-          <button 
+        <div className="text-center">
+          <div>
+            <TestComp />
+          </div>
+          <p className="text-red-500 mb-4">{error}</p>
+          <button
             onClick={fetchVideos}
-            className="ml-4 text-white bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600"
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
             Retry
           </button>
@@ -80,33 +73,20 @@ export default function VideoGrid() {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {videos.map((video) => (
-          <Link 
-            key={video.id} 
-            href={`/videos/${video.id}`}
-            className="bg-white rounded-lg shadow hover:shadow-md transition-shadow"
-          >
-            <div className="relative aspect-video">
-              <Image
-                src={video.thumbnailUrl || '/api/placeholder/400/225'}
-                alt={video.title}
-                fill
-                className="object-cover rounded-t-lg"
-              />
-            </div>
-            
-            <div className="p-3">
-              <h3 className="font-medium text-gray-800 truncate">
-                {video.title}
-              </h3>
-              <p className="text-sm text-gray-500 mt-1">
-                {video.user.name}
-              </p>
-            </div>
-          </Link>
+          <VideoCard
+            key={video.id}
+            video={video}
+            onClick={() => setSelectedVideo(video)}
+          />
         ))}
       </div>
+      <WatchPage
+        video={selectedVideo}
+        isOpen={!!selectedVideo}
+        onClose={() => setSelectedVideo(null)}
+      />
     </div>
   );
 }
