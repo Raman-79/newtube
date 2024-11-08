@@ -13,6 +13,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^5.21.1",
+    "dotenv": "^16.4.5",
+    "jose": "^5.9.6",
+    "prisma": "^5.21.1",
     "video-uploader": "file:"
+  },
+  "devDependencies": {
+    "@types/node": "^22.8.6"
   }
 }

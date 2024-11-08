@@ -9,24 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.addVideoToDB = void 0;
+const addVideoToDB = (location, title, description, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    // Logic to add video details to the database
+    // Return videoId or handle errors
+});
 exports.addVideoToDB = addVideoToDB;
-const db_1 = require("../db/db");
-function addVideoToDB(originalUrl, title, description, userId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const data = yield db_1.db.video.create({
-                data: {
-                    userId: 'ada2a70f-0eff-48c4-bcd2-973aa91086b2',
-                    title,
-                    description,
-                    url: originalUrl,
-                },
-            });
-            return data.id;
-        }
-        catch (err) {
-            console.error("Error adding video to DB:", err);
-            return '';
-        }
-    });
-}

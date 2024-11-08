@@ -75,6 +75,7 @@ import { addVideoToDB } from '../lib/utils';
           uploadId: data.UploadId,
           key: data.Key,
         });
+          
         console.log("Initialized multipart upload with upload id",data.UploadId)
       })
       .catch((err:AWSError)=>{
@@ -164,7 +165,6 @@ import { addVideoToDB } from '../lib/utils';
       if(!videoId){
         console.log("Error while uploading video to DB");
         //?? Write a function to handle situation where the multipart upload is finished and there is an issue while writing it to db
-
       }
       //TODO: Put this in a function
       //Send the video to a transcoder service

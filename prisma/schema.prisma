@@ -10,19 +10,20 @@ datasource db {
 model User {
   id        String    @id @default(uuid()) @db.Uuid
   name      String
+  password  String
   isCreator Boolean   @default(false)
   email     String    @unique
+  access_token String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  videos    Video[]   // Relation field
-
-  @@map("users") // Maps to "users" table in database
+  videos    Video[]  
+  @@map("users") 
 }
 
 model Video {
   id           String    @id @default(uuid()) @db.Uuid
   title        String
-  description  String?   // Optional field
+  description  String?  
   url          String
   thumbnailUrl String?
   likes        Int       @default(0)
@@ -30,10 +31,7 @@ model Video {
   isPublished  Boolean   @default(false)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
-  
-  // Relation fields
   userId       String    @db.Uuid
   user         User      @relation(fields: [userId], references: [id])
-
-  @@map("videos") // Maps to "videos" table in database
+  @@map("videos") 
 }

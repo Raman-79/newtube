@@ -2,8 +2,10 @@
 CREATE TABLE "users" (
     "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
     "isCreator" BOOLEAN NOT NULL DEFAULT false,
     "email" TEXT NOT NULL,
+    "access_token" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

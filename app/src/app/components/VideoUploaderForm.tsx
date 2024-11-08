@@ -119,7 +119,7 @@ export default function VideoUploadForm() {
 
       // Upload video file
       const uploadResult = await uploadFile(formData.videoFile);
-
+      console.log(uploadResult);
       // Upload thumbnail if exists
       let thumbnailLocation = null;
       if (formData.thumbnail) {
@@ -130,7 +130,7 @@ export default function VideoUploadForm() {
       //  video metadata to database
       // uploadResult.location and thumbnailLocation
 
-      router.push('/');
+      // router.push('/');
     } catch (error) {
       console.error('Error during upload:', error);
     } finally {
@@ -166,7 +166,7 @@ export default function VideoUploadForm() {
         <label className="block text-sm font-medium text-gray-700">Video File</label>
         <input
           type="file"
-          accept="video/*"
+          accept=".mp4"
           required
           className="mt-1 block w-full"
           onChange={(e) => setFormData({
@@ -180,9 +180,9 @@ export default function VideoUploadForm() {
         <label className="block text-sm font-medium text-gray-700">Thumbnail</label>
         <input
           type="file"
-          accept="image/*"
+          accept=".JPG .JPEG .PNG"
           className="mt-1 block w-full"
-          onChange={(e) => setFormData({
+          onChange={(e) => setFormData({ 
             ...formData,
             thumbnail: e.target.files ? e.target.files[0] : null,
           })}

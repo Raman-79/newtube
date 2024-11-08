@@ -4,11 +4,13 @@ export async function addVideoToDB(originalUrl: string, title: string, descripti
   try {
    const data = await db.video.create({
       data: {
-        userId: '271b0106-526c-4799-af1f-f78a1796c7d3',
+        
+        userId: 'ada2a70f-0eff-48c4-bcd2-973aa91086b2',
         title,
         description,
         url: originalUrl,
       },
+
     });
     return data.id;
   } catch (err) {
