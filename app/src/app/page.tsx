@@ -23,7 +23,7 @@ export default function Home() {
         </div>
       ) : mockVideos.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <>{JSON.stringify(session)}</>
+        
           {mockVideos.map((video: Video) => (
             <VideoCard key={video.id} video={video} onClick={function (): void {
               throw new Error("Function not implemented.");
@@ -34,6 +34,7 @@ export default function Home() {
       ) : (
         <div className="text-center py-10">
           <VideoGrid />
+          <h1>{JSON.stringify(session)}</h1>
           <p className="text-xl text-gray-600">No videos to show</p>
         </div>
       )}

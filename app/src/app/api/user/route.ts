@@ -33,6 +33,7 @@ export async function POST(req: Request) {
         name,
         password: hashedPassword,
         access_token: token,
+        authProvider : "EMAIL"
       }
     });
 
@@ -54,9 +55,9 @@ export async function GET(req: Request) {
 
     // Find the user in the database
     const user = await prisma.user.findFirst({ where: { email } });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-    }
+    // if (!user || !(await bcrypt.compare(password, user.password))) {
+    //   return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    // }
     
 
     return NextResponse.json({ user }, { status: 200 });
